@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country, District, Sub-District</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Location Selection</h1>
+
+    <label for="country">Country:</label>
+    <select id="country" name="country">
+        <option value="">Select Country</option>
+    </select>
+    <br><br>
+
+    <label for="district">District:</label>
+    <select id="district" name="district" disabled>
+        <option value="">Select District</option>
+    </select>
+    <br><br>
+
+    <label for="subDistrict">Sub-District:</label>
+    <select id="subDistrict" name="subDistrict" disabled>
+        <option value="">Select Sub-District</option>
+    </select>
+
+    <script>
+        // Hardcoded data for countries, districts, and sub-districts
+        const data = {
+            "Bangladesh": {
+                "Dhaka": ["Dhanmondi", "Gulshan", "Mirpur"],
+                "Chittagong": ["Pahartali", "Patenga", "Anwara"]
+            },
+            "USA": {
+                "California": ["Los Angeles", "San Francisco", "San Diego"],
+                "Texas": ["Houston", "Dallas", "Austin"]
+            },
+            "India": {
+                "Maharashtra": ["Mumbai", "Pune", "Nagpur"],
+                "Karnataka": ["Bangalore", "Mysore", "Mangalore"]
+            }
+        };
+
+        $(document).ready(function() {
+            const countrySelect = $('#country');
+            const districtSelect = $('#district');
+            const subDistrictSelect = $('#subDistrict');
+
+            // Load countries into the country dropdown
+            function loadCountries() {
+                countrySelect.append('<option value="">Select Country</option>');
+                $.each(data, function(country) {
+                    countrySelect.append('<option value="' + country + '">' + country + '</option>');
+                });
+            }
+
+            // Load districts based on selected country
+            function loadDistricts(country) {
+                districtSelect.empty().append('<option value="">Select District</option>');
+                subDistrictSelect.empty().append('<option value="">Select Sub-District</option>').prop('disabled', true);
+
+                if (country && data[country]) {
+                    districtSelect.prop('disabled', false);
+                    $.each(data[country], function(district) {
+                        districtSelect.append('<option value="' + district + '">' + district + '</option>');
+                    });
+                } else {
+                    districtSelect.prop('disabled', true);
+                }
+            }
+
+            // Load sub-districts based on selected district
+            function loadSubDistricts(country, district) {
+                subDistrictSelect.empty().append('<option value="">Select Sub-District</option>');
+
+                if (district && data[country][district]) {
+                    subDistrictSelect.prop('disabled', false);
+                    $.each(data[country][district], function(index, subDistrict) {
+                        subDistrictSelect.append('<option value="' + subDistrict + '">' + subDistrict + '</option>');
+                    });
+                } else {
+                    subDistrictSelect.prop('disabled', true);
+                }
+            }
+
+            // Initialize by loading countries
+            loadCountries();
+
+            // Event listener for country change
+            countrySelect.on('change', function() {
+                const selectedCountry = $(this).val();
+                loadDistricts(selectedCountry);
+            });
+
+            // Event listener for district change
+            districtSelect.on('change', function() {
+                const selectedCountry = countrySelect.val();
+                const selectedDistrict = $(this).val();
+                loadSubDistricts(selectedCountry, selectedDistrict);
+            });
+        });
+    </script>
+</body>
+</html>
